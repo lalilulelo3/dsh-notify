@@ -70,6 +70,13 @@ dsh plugin --profile web add @lalilulelo3/dsh-notify
 
 早期版本借用的是 `powershell.exe` 的身份（脚本弹 toast 的常见做法）。那个身份与「Windows PowerShell」应用共用，因此在「设置 → 系统 → 通知」里关掉 **Windows PowerShell** 会让本插件的通知**全部失效**——而那一项完全看不出与插件有关，而且有时根本不出现在列表里。改用独立身份后，插件会以自己的名字出现在通知列表里，只可能被你有意关闭。
 
+插件在**首次挂载时**自动完成 Windows 要求的两件事（后台执行、幂等，见 `lib/win-identity.ps1`）：
+
+1. 写入 `HKCU\Software\Classes\AppUserModelId\…` 注册项——让它**能出现在通知设置列表里**；
+2. 创建带该 AUMID 属性的**开始菜单快捷方式**（`DSH Notify.lnk`）——**没有它，Windows 只会把通知静默放进通知中心，不弹横幅、不响铃**。
+
+两处写入都是尽力而为：失败只会退化成"没有横幅的通知"，绝不会影响 `dsh web` 启动。
+
 在非 Windows 平台上插件会正常加载但保持静默，因此共享同一 profile 也能正常启动。
 
 ## 卸载
@@ -99,6 +106,9 @@ dsh plugin --profile web remove @lalilulelo3/dsh-notify
 
 **通知曾经好过、现在突然不弹了。**
 去「设置 → 系统 → 通知」里找到 **DSH Notify** 并重新打开它。0.2.0 之前的版本是用「Windows PowerShell」这个条目发送的，所以要去查的是那一项，而不是本插件。
+
+**通知只进通知中心、不弹横幅也没声音。**
+Windows 要求桌面应用必须有那个开始菜单快捷方式才会弹横幅。删除 `%APPDATA%\Microsoft\Windows\Start Menu\Programs\DSH Notify.lnk` 后重启 `dsh web`，插件会在挂载时自动重建。
 
 **`dsh web` 启动不起来了。**
 移除插件后重启：

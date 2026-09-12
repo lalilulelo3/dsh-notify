@@ -100,6 +100,18 @@ disabled every notification, and nothing in that list pointed back to this
 plugin. With a dedicated identity the plugin is listed by its own name and can
 only be toggled on purpose.
 
+On first mount the plugin provisions both pieces Windows requires, in the
+background and idempotently (`lib/win-identity.ps1`):
+
+1. the `HKCU\Software\Classes\AppUserModelId\…` registration, so the app appears
+   in Settings → Notifications at all, and
+2. a Start Menu shortcut (`DSH Notify.lnk`) carrying that AUMID. Without the
+   shortcut Windows accepts the toast but only files it in the notification
+   centre — **no banner and no sound**.
+
+Both writes are best-effort: a failure degrades to a banner-less toast, never a
+broken boot.
+
 On non-Windows platforms the plugin loads and stays inert, so a shared profile
 still boots.
 
@@ -135,6 +147,11 @@ narrow the reasons:
 Find **DSH Notify** in Settings → System → Notifications and switch it back on.
 Releases before 0.2.0 sent toasts under "Windows PowerShell" instead, so that
 entry — not this plugin's — was the one to check.
+
+**The toast lands in the notification centre with no banner and no sound.**
+Windows needs the Start Menu shortcut for a desktop app's banner. Delete
+`%APPDATA%\Microsoft\Windows\Start Menu\Programs\DSH Notify.lnk`, restart
+`dsh web`, and the plugin rebuilds it on mount.
 
 **`dsh web` no longer starts.**
 Remove the plugin and restart:
