@@ -1,0 +1,56 @@
+{
+  "name": "@lalilulelo3/dsh-notify",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: Windows desktop notifications + sound when an agent turn finishes or the harness is waiting for you.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README_ZH.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "lalilulelo3",
+    "url": "https://github.com/lalilulelo3"
+  },
+  "homepage": "https://github.com/lalilulelo3/dsh-notify#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lalilulelo3/dsh-notify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lalilulelo3/dsh-notify/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "notification",
+    "windows-toast",
+    "desktop-notification",
+    "agent",
+    "notify"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

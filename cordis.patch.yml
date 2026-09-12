@@ -1,0 +1,23 @@
+# @lalilulelo3/dsh-notify — bundle patch.
+#
+# Installing through the official CLI —
+#
+#   dsh plugin --profile web add @lalilulelo3/dsh-notify
+#
+# — reconciles `dsh.profile.bundles` against installed packages and, seeing the
+# `dsh.bundle.patch` declaration in package.json, appends this package to the
+# bundle stack. The profile boot then merges this patch, which mounts the plugin
+# as one config row. No profile file edits are needed.
+#
+# Row config is optional; every field has a default (see README):
+#
+#   - insert:
+#       - id: dsh-notify
+#         name: '@lalilulelo3/dsh-notify'
+#         config:
+#           sound: true
+#           title: DSH
+#           reasons: [completed, error]
+- insert:
+    - id: dsh-notify
+      name: '@lalilulelo3/dsh-notify'
