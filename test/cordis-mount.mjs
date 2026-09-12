@@ -25,22 +25,33 @@ const fiber = root.plugin(plugin, { title: 'DSH-MOUNT-TEST' })
 await fiber
 console.log(`mounted plugin: ${plugin.name}`)
 
-root.emit('session/event', { id: 'session-mount-test' }, {
+const session = { id: 'session-mount-test', header: { cwd: 'C:\\Users\\lalil\\Desktop\\DSH\\dsh-notify' } }
+
+root.emit('session/event', session, {
   type: 'turn/end',
   data: { turn: 1, reason: { kind: 'completed' } },
 })
 console.log('dispatched session/event turn/end -> toast expected')
 
+root.emit('session/event', { id: 'child', header: { origin: 'subagent', delegationDepth: 1 } }, {
+  type: 'turn/end',
+  data: { turn: 1, reason: { kind: 'completed' } },
+})
+console.log('dispatched subagent turn/end -> must stay silent')
+
 let nextCalled = false
 const answer = root.waterfall(
   'user-questions/request',
   { questions: [{ id: 'q1', question: '真实 Cordis 挂载测试问题' }] },
-  () => 'builtin-fallback',
+  () => {
+    nextCalled = true
+    return 'builtin-fallback'
+  },
 )
-nextCalled = answer === 'builtin-fallback'
 console.log(`waterfall returned ${JSON.stringify(answer)} (delegated = ${nextCalled})`)
+if (!nextCalled) throw new Error('waterfall listener vetoed the request (next() was not called)')
 
-root.emit('session/event', { id: 'session-mount-test' }, {
+root.emit('session/event', session, {
   type: 'approval/asked',
   data: { id: 'a1', toolName: 'pwsh' },
 })
@@ -48,4 +59,4 @@ console.log('dispatched session/event approval/asked -> toast expected')
 
 await new Promise((resolve) => setTimeout(resolve, 2000))
 await fiber.dispose?.()
-console.log('CORDIS MOUNT OK — expect 3 toasts, plugin unmounted cleanly.')
+console.log('CORDIS MOUNT OK — expect 3 toasts (subagent step silent), plugin unmounted cleanly.')

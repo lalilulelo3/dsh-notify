@@ -41,7 +41,9 @@ edits are required.
 The plugin is **observe-only**: its `user-questions/request` listener is
 prepended, notifies, and then calls `next()`, so the real answerer still receives
 the request untouched. A failed notification is swallowed and never disturbs the
-agent loop.
+agent loop. Top-level sessions are labelled by their workspace folder name
+(falling back to a short session id), and child (subagent) sessions stay silent
+unless you set `subagents: true`.
 
 ## Configuration
 
@@ -62,6 +64,7 @@ Every field is optional. Add an id-targeted override to your profile patch file
 | `question` | boolean | `true` | Notify when the harness waits for an answer |
 | `approval` | boolean | `true` | Notify when the harness waits for approval |
 | `reasons` | string[] | `[completed, error, blocked, max-tokens]` | Which `turn/end` reasons notify (`aborted`, `interrupted` are opt-in) |
+| `subagents` | boolean | `false` | Also notify for subagent (child) sessions; off keeps multi-agent runs quiet |
 | `sound` | boolean | `true` | Play the Windows default notification sound |
 | `title` | string | `DSH` | Toast heading |
 

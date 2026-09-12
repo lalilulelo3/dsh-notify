@@ -30,7 +30,7 @@ dsh plugin --profile web add @lalilulelo3/dsh-notify
 | 等你的回答 | `user-questions/request` 瀑布钩子 | 总是 |
 | 等你的授权 | `approval/asked` 会话事件 | 总是 |
 
-插件是**只观察**的：它的 `user-questions/request` 监听器通过 `prepend` 抢在前面发通知，然后调用 `next()` 放行，因此真正的回答器仍能原样收到请求。通知失败会被静默吞掉，绝不干扰 agent 循环。
+插件是**只观察**的：它的 `user-questions/request` 监听器通过 `prepend` 抢在前面发通知，然后调用 `next()` 放行，因此真正的回答器仍能原样收到请求。通知失败会被静默吞掉，绝不干扰 agent 循环。顶层会话用其工作区文件夹名作为标签（取不到时退化为短会话 ID）；子 agent 会话默认保持静默，除非你设置 `subagents: true`。
 
 ## 配置
 
@@ -50,6 +50,7 @@ dsh plugin --profile web add @lalilulelo3/dsh-notify
 | `question` | boolean | `true` | 等你回答时是否通知 |
 | `approval` | boolean | `true` | 等你授权时是否通知 |
 | `reasons` | string[] | `[completed, error, blocked, max-tokens]` | 哪些 `turn/end` 原因触发通知（`aborted`、`interrupted` 需显式开启） |
+| `subagents` | boolean | `false` | 是否也为子 agent 会话通知；关闭可让多 agent 任务保持安静 |
 | `sound` | boolean | `true` | 是否播放 Windows 默认通知音 |
 | `title` | string | `DSH` | 通知标题 |
 
