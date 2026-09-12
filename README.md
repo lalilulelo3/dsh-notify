@@ -93,6 +93,33 @@ dsh plugin --profile web remove @lalilulelo3/dsh-notify
 
 Then restart `dsh web`.
 
+## Troubleshooting
+
+**No toast appears at all.**
+1. Restart `dsh web` — a newly installed bundle only mounts at boot.
+2. Confirm it is in the composed config: `dsh --profile web --dump-config` should
+   list `@lalilulelo3/dsh-notify`.
+3. Check Windows notifications: Settings → System → Notifications, and make sure
+   Focus Assist / Do Not Disturb is off.
+4. The plugin is Windows-only; elsewhere it loads and stays inert by design.
+
+**Multi-agent runs are noisy.**
+Child (subagent) sessions are skipped by default. If you still see too many,
+narrow the reasons:
+
+```yaml
+- id: dsh-notify
+  config:
+    reasons: [completed, error]
+```
+
+**`dsh web` no longer starts.**
+Remove the plugin and restart:
+
+```bash
+dsh plugin --profile web remove @lalilulelo3/dsh-notify
+```
+
 ## License
 
 [MIT](./LICENSE)

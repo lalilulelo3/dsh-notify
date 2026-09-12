@@ -73,6 +73,30 @@ dsh plugin --profile web remove @lalilulelo3/dsh-notify
 
 然后重启 `dsh web`。
 
+## 排障
+
+**完全没有通知弹出。**
+1. **重启 `dsh web`** —— 新装的 bundle 只在启动时挂载。
+2. 确认它已进入组合配置：`dsh --profile web --dump-config` 的输出里应能看到 `@lalilulelo3/dsh-notify`。
+3. 检查 Windows 通知设置：设置 → 系统 → 通知，并确认**专注助手/勿扰模式已关闭**。
+4. 本插件仅支持 Windows；其他平台会正常加载但保持静默（这是设计行为）。
+
+**多 agent 任务时通知太多。**
+子 agent 会话默认已被跳过。如果仍然嫌多，可以收窄触发原因：
+
+```yaml
+- id: dsh-notify
+  config:
+    reasons: [completed, error]
+```
+
+**`dsh web` 启动不起来了。**
+移除插件后重启：
+
+```bash
+dsh plugin --profile web remove @lalilulelo3/dsh-notify
+```
+
 ## 许可证
 
 [MIT](./LICENSE)
