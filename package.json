@@ -1,6 +1,6 @@
 {
   "name": "@lalilulelo3/dsh-notify",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DeepSeek Harness plugin: Windows desktop notifications + sound when an agent turn finishes or the harness is waiting for you.",
   "type": "module",
   "main": "lib/index.js",

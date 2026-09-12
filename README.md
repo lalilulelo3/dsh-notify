@@ -69,6 +69,7 @@ Every field is optional. Add an id-targeted override to your profile patch file
 | `approval` | boolean | `true` | Notify when the harness waits for approval |
 | `reasons` | string[] | `[completed, error, blocked, max-tokens]` | Which `turn/end` reasons notify (`aborted`, `interrupted` are opt-in) |
 | `subagents` | boolean | `false` | Also notify for subagent (child) sessions; off keeps multi-agent runs quiet |
+| `appId` | string | `com.lalilulelo3.dsh-notify` | AppUserModelID the toast is sent under; Windows lists it as **DSH Notify** |
 | `sound` | boolean | `true` | Play the Windows default notification sound |
 | `title` | string | `DSH` | Toast heading |
 
@@ -85,6 +86,19 @@ the Web UI needs rebuilding. On mount it subscribes to:
 
 A notification spawns `powershell.exe -EncodedCommand` with a small WinRT toast
 script. The child is fire-and-forget; the plugin never awaits it.
+
+### App identity
+
+Toasts are sent under the plugin's **own** AppUserModelID
+(`com.lalilulelo3.dsh-notify`), registered on first use through
+`HKCU\Software\Classes\AppUserModelId\…` with the display name **DSH Notify**.
+
+Earlier releases borrowed `powershell.exe`'s identity instead — the usual trick
+for scripting a toast. That identity is shared with the Windows PowerShell app,
+so switching "Windows PowerShell" off in Settings → Notifications silently
+disabled every notification, and nothing in that list pointed back to this
+plugin. With a dedicated identity the plugin is listed by its own name and can
+only be toggled on purpose.
 
 On non-Windows platforms the plugin loads and stays inert, so a shared profile
 still boots.
@@ -116,6 +130,11 @@ narrow the reasons:
   config:
     reasons: [completed, error]
 ```
+
+**Notifications stopped after something was switched off.**
+Find **DSH Notify** in Settings → System → Notifications and switch it back on.
+Releases before 0.2.0 sent toasts under "Windows PowerShell" instead, so that
+entry — not this plugin's — was the one to check.
 
 **`dsh web` no longer starts.**
 Remove the plugin and restart:

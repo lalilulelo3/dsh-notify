@@ -51,6 +51,7 @@ dsh plugin --profile web add @lalilulelo3/dsh-notify
 | `approval` | boolean | `true` | 等你授权时是否通知 |
 | `reasons` | string[] | `[completed, error, blocked, max-tokens]` | 哪些 `turn/end` 原因触发通知（`aborted`、`interrupted` 需显式开启） |
 | `subagents` | boolean | `false` | 是否也为子 agent 会话通知；关闭可让多 agent 任务保持安静 |
+| `appId` | string | `com.lalilulelo3.dsh-notify` | 发送通知所用的 AppUserModelID；Windows 里显示为 **DSH Notify** |
 | `sound` | boolean | `true` | 是否播放 Windows 默认通知音 |
 | `title` | string | `DSH` | 通知标题 |
 
@@ -62,6 +63,12 @@ dsh plugin --profile web add @lalilulelo3/dsh-notify
 - **`user-questions/request`** —— `ask_user_question` 工具派发的 Cordis 瀑布钩子。监听器通过 `prepend` 抢先通知，再用 `next()` 放行。
 
 每条通知会启动 `powershell.exe -EncodedCommand` 执行一小段 WinRT toast 脚本，子进程即发即忘，插件从不等待它。
+
+### 应用身份
+
+通知使用插件**自己的** AppUserModelID（`com.lalilulelo3.dsh-notify`）发送，首次使用时通过 `HKCU\Software\Classes\AppUserModelId\…` 注册，显示名为 **DSH Notify**。
+
+早期版本借用的是 `powershell.exe` 的身份（脚本弹 toast 的常见做法）。那个身份与「Windows PowerShell」应用共用，因此在「设置 → 系统 → 通知」里关掉 **Windows PowerShell** 会让本插件的通知**全部失效**——而那一项完全看不出与插件有关，而且有时根本不出现在列表里。改用独立身份后，插件会以自己的名字出现在通知列表里，只可能被你有意关闭。
 
 在非 Windows 平台上插件会正常加载但保持静默，因此共享同一 profile 也能正常启动。
 
@@ -89,6 +96,9 @@ dsh plugin --profile web remove @lalilulelo3/dsh-notify
   config:
     reasons: [completed, error]
 ```
+
+**通知曾经好过、现在突然不弹了。**
+去「设置 → 系统 → 通知」里找到 **DSH Notify** 并重新打开它。0.2.0 之前的版本是用「Windows PowerShell」这个条目发送的，所以要去查的是那一项，而不是本插件。
 
 **`dsh web` 启动不起来了。**
 移除插件后重启：
