@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22', '24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Syntax check
+        run: node --check lib/index.js
+
+      - name: Package contents
+        run: npm pack --dry-run
+
+      - name: Smoke test (fake Cordis context)
+        run: node test/smoke.mjs
+
+      - name: Real-Cordis mount test (skips without a local DSH)
+        run: node test/cordis-mount.mjs

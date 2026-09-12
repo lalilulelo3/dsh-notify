@@ -6,26 +6,54 @@
  * and the `user-questions/request` waterfall exactly like the harness does, and
  * fails loudly on any mount or dispatch error.
  *
- * Run from anywhere: node test/cordis-mount.mjs
+ * Cordis is resolved from the local DSH installation (`$DSH_HOME/profiles/...`).
+ * When DSH is not installed the test skips with exit code 0, so it stays usable
+ * in CI.
+ *
+ * Run: node test/cordis-mount.mjs
  */
 
-const CORDIS = 'file:///C:/Users/lalil/.dsh/profiles/node_modules/@deepseek-ai/cordis/lib/index.js'
-const PLUGIN = 'file:///C:/Users/lalil/Desktop/DSH/dsh-notify/lib/index.js'
+import { existsSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
-const cordis = await import(CORDIS)
+const pluginUrl = new URL('../lib/index.js', import.meta.url)
+
+/**
+ * Locate the `@deepseek-ai/cordis` entry inside a local DSH installation.
+ *
+ * @returns the absolute entry path, or undefined when DSH is not installed here.
+ */
+function resolveCordisEntry() {
+  const home = process.env.DSH_HOME ?? join(homedir(), '.dsh')
+  const candidates = [
+    join(home, 'profiles', 'node_modules', '@deepseek-ai', 'cordis', 'lib', 'index.js'),
+    join(home, 'profiles', 'web', 'node_modules', '@deepseek-ai', 'cordis', 'lib', 'index.js'),
+  ]
+  return candidates.find((candidate) => existsSync(candidate))
+}
+
+const cordisEntry = resolveCordisEntry()
+if (cordisEntry === undefined) {
+  console.log('SKIP: @deepseek-ai/cordis not found — boot a DSH profile once, then re-run.')
+  process.exit(0)
+}
+
+const cordis = await import(pathToFileURL(cordisEntry).href)
 const Context = cordis.Context ?? cordis.default
 if (typeof Context !== 'function') {
   throw new Error(`cannot resolve Context from cordis; exports = ${Object.keys(cordis).join(', ')}`)
 }
 
-const plugin = await import(PLUGIN)
+const plugin = await import(pluginUrl.href)
 const root = new Context()
 
 const fiber = root.plugin(plugin, { title: 'DSH-MOUNT-TEST' })
 await fiber
 console.log(`mounted plugin: ${plugin.name}`)
 
-const session = { id: 'session-mount-test', header: { cwd: 'C:\\Users\\lalil\\Desktop\\DSH\\dsh-notify' } }
+const session = { id: 'session-mount-test', header: { cwd: join('workspace', 'demo') } }
 
 root.emit('session/event', session, {
   type: 'turn/end',
