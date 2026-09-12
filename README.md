@@ -1,5 +1,9 @@
 # @lalilulelo3/dsh-notify
 
+**🌏 中文文档：[README_ZH.md](./README_ZH.md)** · English
+
+> **中文简介**：DeepSeek Harness 的 Windows 桌面通知插件 —— agent 完成任务、或需要你回答 / 授权时，弹出原生系统通知（toast）并响铃。**完整中文文档见 [README_ZH.md](./README_ZH.md)。**
+
 Windows desktop notifications for **DeepSeek Harness** — get a native toast and a
 sound when the agent finishes a turn, or when it is waiting for you.
 
